@@ -41,7 +41,18 @@ INSTALLED_APPS = [
 'livros',                  
 'rest_framework_simplejwt',
 'drf_yasg', 
-] 
+]
+
+SWAGGER_SETTINGS = {
+'SECURITY_DEFINITIONS': {
+'Bearer': {
+'type': 'apiKey',
+'name': 'Authorization',
+'in': 'header',
+'description': 'JWT Authorization. Use o formato: Bearer <seu_token>'
+}
+}
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
