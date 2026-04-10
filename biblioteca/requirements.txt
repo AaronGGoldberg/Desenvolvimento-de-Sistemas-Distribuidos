@@ -14,6 +14,12 @@ pip install django-cors-headers
 
 python manage.py createsuperuser
 
+## **curl -X POST http://127.0.0.1:8000/api/token/ \
+-H "Content-Type: application/json" \
+-d '{"username":"admin","password":"admin123"}'**
+
+## Bearer <access_token>
+
 python manage.py runserver 0.0.0.0:8000
 
 //mudança dos settings com SWAGGER para token.
