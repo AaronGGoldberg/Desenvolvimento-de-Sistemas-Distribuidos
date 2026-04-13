@@ -1,25 +1,62 @@
-//pip install -r requirements.txt
+## Instalação das dependências:
+## pip install -r requirements.txt
 
+# Instalação do pip:
 python -m pip install --upgrade pip
 
-python3 -m venv venv
+## Criação do ambiente virtual:
+## python3 -m venv venv
 
-.\ambient\venv\Scripts\activate OU venv\Scripts\Activate.ps1 OU source venv/bin/activate
+## Ativação do ambiente virtual:
+## .\ambient\venv\Scripts\activate OU venv\Scripts\Activate.ps1 OU source venv/bin/activate
 
+## Criação do projeto Django:
+## django-admin startproject projeto
+
+## Criação do aplicativo "api":
+## python manage.py startapp api
+
+# Instalação das dependências do Django-Rest e do DRF:
 pip install django djangorestframework drf-yasg djangorestframework-simplejwt
 
+# Instalação do DRF HAL JSON e do DRF Spectacular para documentação da API no HATEOAS:
+pip install drf-hal-json drf-spectacular
+
+# Instalação do Django Filter
 pip install django-filter
 
+# Instalação do Django CORS Headers
 pip install django-cors-headers
 
+# Criação do banco de dados:
+python manage.py makemigrations
+# Migração do banco de dados:
+python manage.py migrate
+
+
+# Criação de um superusuário para acessar o painel de administração do Django:
 python manage.py createsuperuser
 
+## Token de acesso para autenticação JWT:
 ## **curl -X POST http://127.0.0.1:8000/api/token/ \
--H "Content-Type: application/json" \
--d '{"username":"admin","password":"admin123"}'**
+## -H "Content-Type: application/json" \
+## -d '{"username":"admin","password":"admin123"}'**
 
+## Ativação do token no Swagger:
 ## Bearer <access_token>
 
-python manage.py runserver 0.0.0.0:8000
+## OBS.: Precisa fazer a mudança dos settings com SWAGGER para token.
 
-//mudança dos settings com SWAGGER para token.
+## Listar ou Criar livros usando a API pela CLI (Command Line Interface) ao invés da interface do Swagger:
+## É necessário obter o token de acesso primeiro (conforme mostrado acima) e depois usar o token para autenticação nas requisições GET ou POST com a autorização Bearer Token.  
+## Testando:
+## GET
+## Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/livros/?ano_publicacao=1595" -
+## Method GET -Headers @{Authorization="Bearer eyJhbGciOiJI..."}
+## POST (parâmetros de corpo)
+## Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/livros/" -Method POST -Headers
+## @{Authorization="Bearer eyJhbGciOi..."} -ContentType "application/json" -Body
+## '{"titulo":"Romeu e Julieta","ano_publicacao":1595,"autor":1}'
+
+# Iniciar o servidor de desenvolvimento do Django:
+python manage.py runserver 0.0.0.0:8000
