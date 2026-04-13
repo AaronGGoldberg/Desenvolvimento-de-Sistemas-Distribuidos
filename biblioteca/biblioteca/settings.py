@@ -40,34 +40,80 @@ INSTALLED_APPS = [
 'django.contrib.messages', 
 'django.contrib.staticfiles', 
 'rest_framework',         
-'livros',                  
-'rest_framework_simplejwt',
-'drf_yasg',
-'corsheaders', 
+'livros',
+
+# Não utilizamos o 'rest_framework_simplejwt' para autenticação JWT, mas ele é uma biblioteca popular para implementar autenticação baseada em JSON Web Tokens (JWT) em APIs RESTful criadas com Django Rest Framework. Ele fornece uma maneira fácil de gerar e validar tokens JWT para autenticar usuários em suas APIs, permitindo que os clientes obtenham tokens de acesso e os usem para acessar recursos protegidos.
+# 'drf_yasg' é uma biblioteca para geração de documentação Swagger/OpenAPI para APIs RESTful criadas com Django Rest Framework. Ele permite que os desenvolvedores criem uma interface interativa para explorar e testar suas APIs, facilitando a compreensão e o uso da API por outros desenvolvedores ou consumidores.                  
+
+#'rest_framework_simplejwt',
+#'drf_yasg',
+# Utilizamos o 'drf_spectacular' para documentação da API no HATEOAS, e o 'drf_hal_json' para renderização e parsing de JSON no formato HAL (Hypertext Application Language), que é um formato de representação de recursos em APIs RESTful. O HAL é projetado para facilitar a navegação e a descoberta de recursos relacionados em uma API, permitindo que os clientes sigam links para acessar recursos relacionados de forma mais eficiente. O 'drf_spectacular' é uma biblioteca para geração automática de documentação OpenAPI/Swagger para APIs RESTful criadas com Django Rest Framework, e ele suporta a geração de documentação para APIs que utilizam o formato HAL.
+
+'corsheaders',
+'drf_spectacular', 
+'drf_hal_json',
 ]
 
+### Configurações do Django Rest Framework para autenticação JWT e permissões globais Com Swagger:
+
+### REST_FRAMEWORK = {
+###    'DEFAULT_AUTHENTICATION_CLASSES': [
+###        'rest_framework_simplejwt.authentication.JWTAuthentication',
+###        # or 'rest_framework.authentication.TokenAuthentication',
+###    ],
+###    'DEFAULT_PERMISSION_CLASSES': [
+###        'rest_framework.permissions.IsAuthenticated',
+###    ],
+###}
+
+###SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+###USE_X_FORWARDED_HOST = True
+
+###SWAGGER_SETTINGS = {
+###'SECURITY_DEFINITIONS': {
+###'Bearer': {
+###'type': 'apiKey',
+###'name': 'Authorization',
+###'in': 'header',
+###'description': 'JWT Authorization. Use o formato: Bearer <seu_token>'
+###}
+###}
+###}
+
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        # or 'rest_framework.authentication.TokenAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
+'DEFAULT_RENDERER_CLASSES': (
+'drf_hal_json.renderers.JSONRenderer',
+'rest_framework.renderers.BrowsableAPIRenderer',
+),
+'DEFAULT_PARSER_CLASSES': (
+'drf_hal_json.parsers.JSONParser',
+'rest_framework.parsers.FormParser',
+'rest_framework.parsers.MultiPartParser',
+),
+'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-USE_X_FORWARDED_HOST = True
+## Configurações do DRF Spectacular para documentação da API no HATEOAS:
 
-SWAGGER_SETTINGS = {
-'SECURITY_DEFINITIONS': {
-'Bearer': {
-'type': 'apiKey',
-'name': 'Authorization',
-'in': 'header',
-'description': 'JWT Authorization. Use o formato: Bearer <seu_token>'
-}
-}
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'API Biblioteca',
+    'DESCRIPTION': 'Documentação da API',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SECURITY': [
+        {
+            'Bearer': []
+        }
+    ],
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            'description': 'JWT Authorization. Use o formato: Bearer <seu_token>'
+        }
+    }
 }
 
 MIDDLEWARE = [
