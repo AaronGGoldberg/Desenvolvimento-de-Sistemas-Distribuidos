@@ -1,0 +1,7 @@
+## Instalação de dependências para o projeto Biblioteca Java
+## Instalar no Codespaces
+## Java Development Kit (JDK)
+## Gradle for Java
+## gradle tasks
+## Gradle build
+## Gradle run
