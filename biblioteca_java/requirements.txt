@@ -1,7 +1,24 @@
 ## Instalação de dependências para o projeto Biblioteca Java
-## Instalar no Codespaces
-## Java Development Kit (JDK)
-## Gradle for Java
-## gradle tasks
-## Gradle build
-## Gradle run
+
+## Instalar no Codespaces:
+### Extension Pack for Java
+### Java Development Kit (JDK)
+### Gradle for Java
+
+## Configurar o JDK e o Gradle no ambiente de desenvolvimento:
+# Rodar o comando para configurar o JDK:
+### gradle tasks
+# Rodar o comando para configurar o Gradle:
+### gradle build
+# Rodar o comando para executar o projeto:
+### gradle bootRun
+
+## Para dar certo, é necessário que a versão do Java seja compatível com a versão do Gradle utilizada no projeto. Verifique a versão do Java instalada e a versão do Gradle especificada no arquivo build.gradle para garantir que sejam compatíveis.
+
+## Como visualizar o código do projeto de diferentes Entidades:
+# Visualizar o código-fonte do projeto por meio do arquivo.
+### code src/main/java/com/exemplo/biblioteca/model/Livro.java
+# Ou usar o comando nano para abrir o arquivo no terminal:
+### nano src/main/java/com/exemplo/biblioteca/model/Livro.java
+# Ou usar o comando cat para exibir o conteúdo do arquivo no terminal:
+### cat src/main/java/com/exemplo/biblioteca/model/Livro.java
