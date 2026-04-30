@@ -133,7 +133,9 @@ Exemplo de resposta:
 
 ## Como executar o projeto
 
-### 1. Instalar dependências
+### 1. Instalar dependências:
+
+OBS.: Não esquecer de usar os comandos para visualizar as versões do (node -v) e (npm -v) e para instalação (nvm install 18) (caso seja clonado para outro servidor) 
 
 Em cada pasta:
 
