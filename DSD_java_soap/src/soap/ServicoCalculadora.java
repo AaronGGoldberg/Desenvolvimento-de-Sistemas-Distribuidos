@@ -1,6 +1,6 @@
 package soap;
 
-import javax.jws.WebService;
+import jakarta.jws.WebService;
 
 @WebService(endpointInterface = "soap.InterfaceCalculadora")
 public class ServicoCalculadora implements InterfaceCalculadora{
