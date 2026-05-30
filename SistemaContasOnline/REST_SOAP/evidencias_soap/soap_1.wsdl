@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://contasonline.soap/" name="ContasOnlineSoapService" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://contasonline.soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <types>
+    <xsd:schema targetNamespace="http://contasonline.soap/" elementFormDefault="qualified">
+      <xsd:element name="consultarContaRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="contaId" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="consultarContaResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="contaId" type="xsd:int"/>
+            <xsd:element name="nome" type="xsd:string"/>
+            <xsd:element name="email" type="xsd:string"/>
+            <xsd:element name="saldo" type="xsd:decimal"/>
+            <xsd:element name="status" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="simularOperacaoRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="contaId" type="xsd:int"/>
+            <xsd:element name="tipo" type="xsd:string"/>
+            <xsd:element name="valor" type="xsd:decimal"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="simularOperacaoResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="contaId" type="xsd:int"/>
+            <xsd:element name="tipo" type="xsd:string"/>
+            <xsd:element name="valor" type="xsd:decimal"/>
+            <xsd:element name="saldoAntes" type="xsd:decimal"/>
+            <xsd:element name="saldoDepois" type="xsd:decimal"/>
+            <xsd:element name="mensagem" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </types>
+  <message name="consultarContaInput">
+    <part name="parameters" element="tns:consultarContaRequest"/>
+  </message>
+  <message name="consultarContaOutput">
+    <part name="parameters" element="tns:consultarContaResponse"/>
+  </message>
+  <message name="simularOperacaoInput">
+    <part name="parameters" element="tns:simularOperacaoRequest"/>
+  </message>
+  <message name="simularOperacaoOutput">
+    <part name="parameters" element="tns:simularOperacaoResponse"/>
+  </message>
+  <portType name="ContasOnlineSoapPortType">
+    <operation name="consultarConta">
+      <input message="tns:consultarContaInput"/>
+      <output message="tns:consultarContaOutput"/>
+    </operation>
+    <operation name="simularOperacao">
+      <input message="tns:simularOperacaoInput"/>
+      <output message="tns:simularOperacaoOutput"/>
+    </operation>
+  </portType>
+  <binding name="ContasOnlineSoapBinding" type="tns:ContasOnlineSoapPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="consultarConta">
+      <soap:operation soapAction="http://contasonline.soap/consultarConta"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="simularOperacao">
+      <soap:operation soapAction="http://contasonline.soap/simularOperacao"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="ContasOnlineSoapService">
+    <documentation>Serviço SOAP acadêmico para consulta e simulação de operações de contas online.</documentation>
+    <port name="ContasOnlineSoapPort" binding="tns:ContasOnlineSoapBinding">
+      <soap:address location="https://jubilant-pancake-q796w5jx9g5pfx946-3003.app.github.dev/soap"/>
+    </port>
+  </service>
+</definitions>
