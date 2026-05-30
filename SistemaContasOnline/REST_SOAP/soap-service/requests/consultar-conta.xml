@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://contasonline.soap/">
+  <soapenv:Header/>
+  <soapenv:Body>
+    <con:consultarContaRequest>
+      <con:contaId>1</con:contaId>
+    </con:consultarContaRequest>
+  </soapenv:Body>
+</soapenv:Envelope>

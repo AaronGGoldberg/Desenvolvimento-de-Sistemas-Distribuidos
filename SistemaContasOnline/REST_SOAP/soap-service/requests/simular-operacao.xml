@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://contasonline.soap/">
+  <soapenv:Header/>
+  <soapenv:Body>
+    <con:simularOperacaoRequest>
+      <con:contaId>1</con:contaId>
+      <con:tipo>saque</con:tipo>
+      <con:valor>100.00</con:valor>
+    </con:simularOperacaoRequest>
+  </soapenv:Body>
+</soapenv:Envelope>
