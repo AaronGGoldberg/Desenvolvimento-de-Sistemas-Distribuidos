@@ -155,14 +155,14 @@ const swaggerDocument = {
                     _links: {
                         type: 'object',
                         example: {
-                            self: { href: '/gateway/contas/1' },
-                            depositar: { href: '/gateway/contas/1/deposito' },
-                            sacar: { href: '/gateway/contas/1/saque' },
-                            transacoes: { href: '/gateway/contas/1/transacoes' },
-                            saldo: { href: '/gateway/contas/1/saldo' },
-                            listarContas: { href: '/gateway/contas' },
-                            home: { href: '/' },
-                            documentacao: { href: '/api-docs' }
+                            self: { href: '/gateway/contas/1', method: 'GET' },
+                            depositar: { href: '/gateway/contas/1/deposito', method: 'POST' },
+                            sacar: { href: '/gateway/contas/1/saque', method: 'POST' },
+                            transacoes: { href: '/gateway/contas/1/transacoes', method: 'GET' },
+                            saldo: { href: '/gateway/contas/1/saldo', method: 'GET' },
+                            listarContas: { href: '/gateway/contas', method: 'GET' },
+                            home: { href: '/', method: 'GET' },
+                            documentacao: { href: '/api-docs', method: 'GET' }
                         }
                     }
                 }
@@ -521,14 +521,14 @@ app.get('/gateway/contas/:id', async (req, res) => {
             ...conta,
             saldo,
             _links: {
-                self: { href: `${baseUrl}/gateway/contas/${id}` },
-                depositar: { href: `${baseUrl}/gateway/contas/${id}/deposito` },
-                sacar: { href: `${baseUrl}/gateway/contas/${id}/saque` },
-                transacoes: { href: `${baseUrl}/gateway/contas/${id}/transacoes` },
-                saldo: { href: `${baseUrl}/gateway/contas/${id}/saldo` },
-                listarContas: { href: `${baseUrl}/gateway/contas` },
-                home: { href: `${baseUrl}/` },
-                documentacao: { href: `${baseUrl}/api-docs` }
+                self: { href: `${baseUrl}/gateway/contas/${id}`, method: 'GET' },
+                depositar: { href: `${baseUrl}/gateway/contas/${id}/deposito`, method: 'POST' },
+                sacar: { href: `${baseUrl}/gateway/contas/${id}/saque`, method: 'POST' },
+                transacoes: { href: `${baseUrl}/gateway/contas/${id}/transacoes`, method: 'GET' },
+                saldo: { href: `${baseUrl}/gateway/contas/${id}/saldo`, method: 'GET' },
+                listarContas: { href: `${baseUrl}/gateway/contas`, method: 'GET' },
+                home: { href: `${baseUrl}/`, method: 'GET' },
+                documentacao: { href: `${baseUrl}/api-docs`, method: 'GET' }
             }
         };
 

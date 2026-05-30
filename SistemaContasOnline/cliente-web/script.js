@@ -7,6 +7,7 @@ const tabelaTransacoes = document.getElementById('tabelaTransacoes');
 const metricTotalContas = document.getElementById('metricTotalContas');
 const metricTotalTransacoes = document.getElementById('metricTotalTransacoes');
 const metricSaldo = document.getElementById('metricSaldo');
+const hateoasActions = document.getElementById('hateoasActions');
 
 function atualizarStatus(texto, tipo = '') {
     statusBadge.textContent = texto;
@@ -26,6 +27,7 @@ function formatarMoeda(valor) {
 
 function mostrarResultado(dados, tipo = 'info') {
     resultado.textContent = JSON.stringify(dados, null, 2);
+    renderizarBotoesHateoas(dados);
 
     if (tipo === 'success') {
         atualizarStatus('Operação realizada com sucesso', 'success');
@@ -37,6 +39,7 @@ function mostrarResultado(dados, tipo = 'info') {
 }
 
 function mostrarErro(mensagem, detalhe = '') {
+    ocultarBotoesHateoas();    
     mostrarResultado(
         {
             sucesso: false,
@@ -47,10 +50,129 @@ function mostrarErro(mensagem, detalhe = '') {
     );
 }
 
+function ocultarBotoesHateoas() {
+    hateoasActions.innerHTML = '';
+    hateoasActions.classList.add('hidden');
+}
+
+function obterRotuloHateoas(relacao, metodo) {
+    const rotulos = {
+        self: 'Abrir esta conta',
+        depositar: 'Depositar via HATEOAS',
+        sacar: 'Sacar via HATEOAS',
+        transacoes: 'Ver transações',
+        saldo: 'Consultar saldo',
+        listarContas: 'Listar contas',
+        home: 'Abrir início',
+        documentacao: 'Abrir Swagger'
+    };
+
+    return rotulos[relacao] || `${metodo} ${relacao}`;
+}
+
+function renderizarBotoesHateoas(dados) {
+    if (!dados || !dados._links || typeof dados._links !== 'object') {
+        ocultarBotoesHateoas();
+        return;
+    }
+
+    const botoes = Object.entries(dados._links)
+        .filter(([, link]) => link && link.href)
+        .map(([relacao, link]) => {
+            const metodo = link.method || (['depositar', 'sacar'].includes(relacao) ? 'POST' : 'GET');
+            const rotulo = obterRotuloHateoas(relacao, metodo);
+
+            return `
+                <button
+                    type="button"
+                    class="hateoas-button"
+                    data-rel="${relacao}"
+                    data-href="${link.href}"
+                    data-method="${metodo}"
+                    onclick="executarAcaoHateoas(this)"
+                >
+                    <span>${rotulo}</span>
+                    <small>${metodo}</small>
+                </button>
+            `;
+        })
+        .join('');
+
+    hateoasActions.innerHTML = `
+        <div class="hateoas-header">
+            <strong>Ações HATEOAS</strong>
+            <span>Clique em um botão para seguir o endpoint relacionado.</span>
+        </div>
+        <div class="hateoas-buttons">
+            ${botoes}
+        </div>
+    `;
+    hateoasActions.classList.remove('hidden');
+}
+
+async function executarAcaoHateoas(botao) {
+    const relacao = botao.dataset.rel;
+    const href = botao.dataset.href;
+    const metodo = botao.dataset.method || 'GET';
+
+    try {
+        if (relacao === 'home' || relacao === 'documentacao') {
+            window.open(href, '_blank');
+            atualizarStatus('Link HATEOAS aberto em nova aba', 'info');
+            return;
+        }
+
+        let opcoes = { method: metodo };
+
+        if (metodo === 'POST') {
+            const valorDigitado = window.prompt(`Informe o valor para ${relacao}:`);
+
+            if (valorDigitado === null) {
+                atualizarStatus('Ação HATEOAS cancelada', 'info');
+                return;
+            }
+
+            const valor = Number(valorDigitado.replace(',', '.'));
+
+            if (!valor || valor <= 0) {
+                return mostrarErro('Informe um valor maior que zero para executar esta ação HATEOAS.');
+            }
+
+            opcoes = {
+                method: metodo,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ valor })
+            };
+        }
+
+        atualizarStatus(`Executando ${metodo} ${relacao}...`, 'info');
+
+        const resposta = await fetch(href, opcoes);
+        const dados = await tratarResposta(resposta);
+
+        mostrarResultado(dados, 'success');
+
+        if (Array.isArray(dados) && relacao === 'listarContas') {
+            renderizarTabelaContas(dados);
+        }
+
+        if (Array.isArray(dados) && relacao === 'transacoes') {
+            renderizarTabelaTransacoes(dados);
+        }
+
+        if (typeof dados.saldo !== 'undefined') {
+            metricSaldo.textContent = formatarMoeda(dados.saldo);
+        }
+    } catch (erro) {
+        mostrarErro('Erro ao executar ação HATEOAS.', erro.message);
+    }
+}
+
 function limparResultado() {
     resultado.textContent = `{
   "mensagem": "Área de resultado limpa com sucesso."
 }`;
+    ocultarBotoesHateoas();
     atualizarStatus('Resultado limpo', 'info');
 }
 

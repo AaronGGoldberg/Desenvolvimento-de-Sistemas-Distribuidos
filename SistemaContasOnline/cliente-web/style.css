@@ -496,3 +496,68 @@ pre {
         padding: 18px;
     }
 }
+.hateoas-actions {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid rgba(91, 140, 255, 0.2);
+    border-radius: 18px;
+    background: rgba(91, 140, 255, 0.08);
+}
+
+.hateoas-actions.hidden {
+    display: none;
+}
+
+.hateoas-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+.hateoas-header strong {
+    font-size: 1rem;
+    color: #ffffff;
+}
+
+.hateoas-header span {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.hateoas-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.hateoas-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: none;
+    border-radius: 999px;
+    padding: 11px 14px;
+    color: #ffffff;
+    background: linear-gradient(135deg, rgba(91, 140, 255, 0.95), rgba(0, 207, 232, 0.86));
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.hateoas-button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+}
+
+.hateoas-button small {
+    padding: 4px 7px;
+    border-radius: 999px;
+    color: #dfe9ff;
+    background: rgba(0, 0, 0, 0.22);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+}

@@ -120,11 +120,11 @@ Exemplo de resposta:
   "email": "aaron@email.com",
   "saldo": 500,
   "_links": {
-    "self": { "href": "/gateway/contas/1" },
-    "depositar": { "href": "/gateway/contas/1/deposito" },
-    "sacar": { "href": "/gateway/contas/1/saque" },
-    "transacoes": { "href": "/gateway/contas/1/transacoes" },
-    "saldo": { "href": "/gateway/contas/1/saldo" }
+    "self": { "href": "/gateway/contas/1", "method": "GET" },
+    "depositar": { "href": "/gateway/contas/1/deposito", "method": "POST" },
+    "sacar": { "href": "/gateway/contas/1/saque", "method": "POST" },
+    "transacoes": { "href": "/gateway/contas/1/transacoes", "method": "GET" },
+    "saldo": { "href": "/gateway/contas/1/saldo", "method": "GET" }
   }
 }
 ```
