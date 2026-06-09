@@ -1,6 +1,6 @@
 # Sistema de Gerenciamento de Contas Online
 
-Aluno: Aaron Guerra Goldberg
+Aluno: Aaron Guerra Goldberg.
 
 ## Descrição
 
