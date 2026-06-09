@@ -1,5 +1,7 @@
 # Sistema de Gerenciamento de Contas Online
 
+Aluno: Aaron Guerra Goldberg
+
 ## Descrição
 
 Este projeto foi desenvolvido para a disciplina de **Sistemas Distribuídos** e tem como objetivo implementar uma arquitetura baseada em **microsserviços**, utilizando um **API Gateway** como ponto central de acesso.
@@ -463,3 +465,241 @@ Essa parte atende ao requisito de exportação da documentação do serviço via
 ### Justificativa técnica
 
 SOAP foi adequado ao cenário porque permite descrever formalmente as operações do serviço por meio de um contrato WSDL. Isso facilita a validação em ferramentas como SoapUI e demonstra interoperabilidade entre tecnologias diferentes, já que o servidor foi feito em Node.js e o cliente consumidor em Python. A principal dificuldade técnica foi tratar manualmente XML, Envelope, Body, namespaces e `soapenv:Fault`, sem depender de um framework que escondesse totalmente o funcionamento do protocolo.
+
+# Serviço WebSocket
+
+Este serviço adiciona ao **SistemaContasOnline** uma demonstração de comunicação em tempo real usando o protocolo **WebSocket**. A proposta é mostrar a diferença entre o modelo tradicional HTTP de requisição-resposta e uma conexão contínua, bidirecional, em que cliente e servidor podem enviar mensagens a qualquer momento.
+
+---
+
+## Objetivo do estudo de caso
+
+O estudo de caso escolhido é um **monitor de notificações em tempo real para o SistemaContasOnline**. Ele pode representar eventos como:
+
+- novo pedido de abertura de conta;
+- nova transação financeira;
+- alerta de saque acima do saldo;
+- mensagem automática de monitoramento enviada pelo servidor.
+
+A interface permite abrir duas ou mais abas do navegador, conectar todos os clientes ao mesmo servidor e visualizar mensagens chegando automaticamente em todos eles por broadcast.
+
+---
+
+## Arquivos principais
+
+| Arquivo | Função |
+|---|---|
+| `server.js` | Servidor HTTP + WebSocket, handshake, armazenamento de clientes e broadcast. |
+| `public/index.html` | Interface web simples para conectar, identificar cliente e enviar mensagens. |
+| `public/script.js` | Cliente WebSocket explícito usando `new WebSocket('ws://...')`. |
+| `public/style.css` | Estilos da interface. |
+| `tests/websocket-broadcast.test.js` | Teste automatizado com dois clientes simultâneos validando broadcast. |
+| `package.json` | Scripts `npm start` e `npm test`. |
+
+---
+
+## Endpoints
+
+| Tipo | Endpoint | Descrição |
+|---|---|---|
+| HTTP | `GET /` | Abre a interface web. |
+| WebSocket | `ws://localhost:3004/ws` ou `wss://<codespace>-3004.app.github.dev/ws` | Canal bidirecional em tempo real. |
+| HTTP | `GET /status` | Retorna status, clientes conectados e URLs públicas calculadas para localhost ou Codespaces. |
+| HTTP | `POST /broadcast` | Envia uma notificação do servidor para todos os clientes conectados. |
+
+---
+
+## Decisões técnicas obrigatórias
+
+### a) Como as conexões dos clientes foram armazenadas?
+
+As conexões ativas são armazenadas em um `Map`. A chave é o ID do cliente e o valor contém o socket TCP/WebSocket, nome amigável e horário de conexão.
+
+### b) Como o sistema identifica um cliente conectado?
+
+O servidor atribui IDs sequenciais, como `cliente-1`, `cliente-2` e assim por diante. A interface também permite enviar um nome amigável para facilitar a demonstração.
+
+### c) Como tratar clientes desconectados?
+
+Quando a conexão é encerrada, o evento `close` remove o cliente do `Map`. Em seguida, o servidor envia um aviso por broadcast e atualiza a lista de clientes conectados.
+
+### d) Qual formato de mensagem foi utilizado?
+
+Foi usado **JSON**, pois ele permite transportar `tipo`, `origem`, `texto`, `clienteId` e `dataHora` de forma estruturada. Isso facilita diferenciar mensagens de sistema, notificações, erros e monitoramento.
+
+---
+
+## Por que WebSocket em vez de REST ou polling?
+
+Em REST tradicional, o cliente precisa fazer uma nova requisição sempre que quiser consultar atualizações. Em polling, vários clientes perguntariam repetidamente ao servidor se há novidades, mesmo quando nada mudou. Com WebSocket, uma única conexão permanece aberta e o servidor envia a atualização imediatamente quando o evento acontece.
+
+WebSocket é mais adequado em cenários como chats, alertas, dashboards, jogos, monitoramento, rastreamento e qualquer caso em que a atualização precisa chegar rapidamente a vários clientes.
+
+---
+
+## Como executar
+
+### 1. Entrar na pasta do serviço
+
+A partir da raiz do repositório:
+
+```bash
+cd SistemaContasOnline/REST_SOAP/websocket-service
+```
+
+### 2. Iniciar o servidor
+
+```bash
+npm start
+```
+
+Também é possível executar diretamente:
+
+```bash
+node server.js
+```
+
+Saída esperada:
+
+```text
+WebSocket Service iniciado na porta 3004.
+Interface web: http://localhost:3004
+Endpoint WebSocket: ws://localhost:3004/ws
+Status HTTP: http://localhost:3004/status
+Broadcast HTTP: POST http://localhost:3004/broadcast
+Codespaces: abra a porta 3004 no navegador e use a URL pública https://<seu-codespace>-3004.app.github.dev
+WebSocket Codespaces: wss://<seu-codespace>-3004.app.github.dev/ws
+```
+
+### 3. Abrir dois clientes simultâneos
+
+Em ambiente local, abra duas abas do navegador no endereço:
+
+```text
+http://localhost:3004
+```
+
+No GitHub Codespaces, abra a aba **Ports**, localize a porta `3004`, deixe a visibilidade adequada para o teste e clique em **Open in Browser**. A URL terá formato semelhante a:
+
+```text
+https://<seu-codespace>-3004.app.github.dev
+```
+
+Cada aba cria uma conexão WebSocket automaticamente. Em localhost a interface usa:
+
+```text
+ws://localhost:3004/ws
+```
+
+No Codespaces, como a página é aberta em HTTPS, o JavaScript troca automaticamente para:
+
+```text
+wss://<seu-codespace>-3004.app.github.dev/ws
+```
+
+O servidor registrará no console a abertura de cada conexão.
+
+### 4. Identificar os clientes
+
+Em cada aba, preencha o campo de identificação com nomes diferentes, por exemplo:
+
+- `Cliente Caixa 1`
+- `Cliente Gerente`
+
+Clique em **Identificar**. A lista de clientes conectados será atualizada automaticamente.
+
+### 5. Enviar mensagem em tempo real
+
+Em uma das abas, digite uma mensagem como:
+
+```text
+Nova transação financeira aguardando conferência.
+```
+
+Clique em **Enviar broadcast**. A mensagem será enviada ao servidor e retransmitida para todas as abas conectadas.
+
+### 6. Enviar broadcast pelo servidor via HTTP
+
+Com o servidor rodando localmente, execute em outro terminal:
+
+```bash
+curl -i \
+  -H "Content-Type: application/json" \
+  -d '{"texto":"Alerta emitido pelo servidor: nova movimentação suspeita."}' \
+  http://localhost:3004/broadcast
+```
+
+No Codespaces, use a URL pública da porta `3004`:
+
+```bash
+curl -i \
+  -H "Content-Type: application/json" \
+  -d '{"texto":"Alerta emitido pelo servidor: nova movimentação suspeita."}' \
+  https://<seu-codespace>-3004.app.github.dev/broadcast
+```
+
+Todos os clientes WebSocket conectados receberão a mensagem automaticamente.
+
+### 7. Verificar status
+
+Localhost:
+
+```bash
+curl http://localhost:3004/status
+```
+
+Codespaces:
+
+```bash
+curl https://<seu-codespace>-3004.app.github.dev/status
+```
+
+Esse endpoint retorna informações sobre o serviço, os clientes conectados e as URLs calculadas para o ambiente atual, incluindo `websocketUrl` com `ws://` em localhost ou `wss://` no Codespaces.
+
+---
+
+## Ciclo de vida demonstrado
+
+1. **Abertura:** o navegador acessa `ws://localhost:3004/ws` em localhost ou `wss://<seu-codespace>-3004.app.github.dev/ws` no Codespaces; o servidor faz o handshake WebSocket e registra o cliente.
+2. **Envio:** o cliente envia mensagens JSON para o servidor usando `socket.send(...)`.
+3. **Recebimento:** o servidor interpreta a mensagem e faz broadcast para todos os clientes.
+4. **Atualização visual:** cada cliente recebe o evento `message` e atualiza a lista HTML automaticamente.
+5. **Encerramento:** ao fechar a aba, o servidor remove a conexão e registra o encerramento no console.
+
+---
+
+## Logs obrigatórios no servidor
+
+O servidor registra no console:
+
+- abertura de conexão;
+- recebimento de mensagem;
+- encerramento de conexão;
+- broadcast enviado via endpoint HTTP;
+- erros de conexão.
+
+Exemplos:
+
+```text
+[websocket] Conexão aberta: cliente-1 de ::1
+[websocket] Mensagem recebida de Cliente Caixa 1 (cliente-1): Nova transação financeira aguardando conferência.
+[websocket] Conexão encerrada: Cliente Caixa 1 (cliente-1)
+```
+
+---
+
+## Testes
+
+O serviço possui um teste automatizado que sobe o servidor em uma porta livre, conecta dois clientes WebSocket e confirma que uma mensagem enviada pelo primeiro cliente chega ao segundo.
+
+Execute:
+
+```bash
+npm test
+```
+
+Resultado esperado:
+
+```text
+Teste WebSocket de broadcast passou.
+```
