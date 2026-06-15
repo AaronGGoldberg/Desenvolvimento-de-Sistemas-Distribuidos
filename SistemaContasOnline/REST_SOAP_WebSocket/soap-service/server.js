@@ -90,13 +90,21 @@ function simularOperacao(xml) {
         throw new Error('O campo valor deve ser maior que zero.');
     }
 
-    if (tipo === 'saque' && valor > conta.saldo) {
-        throw new Error('Saldo insuficiente para simular o saque.');
+    const saldoAntes = conta.saldo;
+
+    if (tipo === 'saque' && valor > saldoAntes) {
+        const diferenca = valor - saldoAntes;
+        throw new Error(
+            `Saldo insuficiente: tentativa de saque de R$ ${valor.toFixed(2)} `
+            + `na conta ${conta.id}, mas o saldo disponível em memória é R$ ${saldoAntes.toFixed(2)}. `
+            + `Faltam R$ ${diferenca.toFixed(2)} para concluir a operação.`
+        );
     }
 
-    const saldoAntes = conta.saldo;
     const saldoDepois = tipo === 'deposito' ? saldoAntes + valor : saldoAntes - valor;
-    const mensagem = `Operação ${tipo} simulada com sucesso.`;
+    conta.saldo = saldoDepois;
+
+    const mensagem = `Operação ${tipo} simulada e registrada na memória com sucesso.`;
 
     return envelopeSoap(`    <tns:simularOperacaoResponse>
       <tns:contaId>${conta.id}</tns:contaId>
