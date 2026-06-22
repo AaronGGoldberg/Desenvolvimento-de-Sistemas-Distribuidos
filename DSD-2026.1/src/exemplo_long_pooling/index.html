@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contador Long Polling</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #f4f4f9;
+        }
+        #contador {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #333;
+            margin: 20px;
+        }
+        #status {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Contagem Regressiva via Long Polling</h1>
+    <div id="contador">100</div>
+    <div id="status">Conectando ao servidor...</div>
+
+    <script>
+        // Elementos da tela
+        const elementoContador = document.getElementById('contador');
+        const elementoStatus = document.getElementById('status');
+        
+        // Valor inicial
+        let numeroAtual = 100;
+
+        function pegarProximoNumero() {
+            // Condição de parada
+            if (numeroAtual <= 0) {
+                elementoStatus.innerText = "Fim da contagem!";
+                console.log("Chegou a zero, parando.");
+                return;
+            }
+
+            elementoStatus.innerText = "Aguardando o servidor...";
+
+            // Prepara os dados para o POST
+            let formData = new FormData();
+            formData.append('parametro', numeroAtual);
+
+            // Faz a requisição ao script PHP
+            fetch('script.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Erro na resposta do servidor");
+                return res.json();
+            })
+            .then(data => {
+                // Atualiza a tela com o valor recebido
+                numeroAtual = data.parametro;
+                elementoContador.innerText = numeroAtual;
+                
+                console.log("Número atual recebido:", numeroAtual);
+                
+                // Dispara a próxima requisição imediatamente
+                pegarProximoNumero();
+            })
+            .catch(error => {
+                elementoStatus.innerText = "Erro de conexão. Tentando novamente em 3s...";
+                console.error("Erro:", error);
+                
+                // Em caso de erro na rede, tenta novamente após 3 segundos
+                setTimeout(pegarProximoNumero, 10000);
+            });
+        }
+
+        // Inicializa o ciclo assim que a página carrega
+        pegarProximoNumero();
+    </script>
+
+</body>
+</html>
